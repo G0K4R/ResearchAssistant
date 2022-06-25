@@ -792,7 +792,16 @@ local function AddResearchIndicatorToSlot(control, linkFunction)
 	else
 		--Known item
 		--in any other case, color it known
-		indicatorControl:SetColor(unpack(RASettings:GetAlreadyResearchedColor()))
+		-- indicatorControl:SetColor(unpack(RASettings:GetAlreadyResearchedColor())) -- UPD-G0K4R-2022-06-24 - line set inactive
+		-- INS-G0K4R-2022-06-24 - begin	
+		-- calling added functions to check if trait is known by all valid chars and in this case set different color
+		-- maybe there could be an optional parameter in user settings for checking this...
+		if RASettings:TraitKnownByAllChars(traitKey) then
+			indicatorControl:SetColor(unpack(RASettings:GetResearchedByAllColor())) -- different color (updated)
+		else
+			indicatorControl:SetColor(unpack(RASettings:GetAlreadyResearchedColor())) -- basic color for known item
+		end
+		-- INS-G0K4R-2022-06-24 - end		
 		if not isProtected == true then
 			if reason == libResearch_Reason_TRAITLESS then
 				data.researchAssistant = TRACKING_STATE_TRAITLESS

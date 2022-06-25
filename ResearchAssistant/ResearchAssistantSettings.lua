@@ -1056,3 +1056,46 @@ function ResearchAssistantSettings:CreateOptionsMenu()
         icon:SetAnchor(CENTER, RA_Icon_Dropdown, CENTER, 36, 0)
     end)
 end
+
+-- INS-G0K4R-2022-06-24 - begin
+-- Added two functions...
+
+-- ... function #1: check if trait is known by all chars
+function ResearchAssistantSettings:TraitKnownByAllChars(traitKey)
+	local countChars = 0
+	local countCharsKnowingTrait = 0
+    local knownByAllChars = false
+	local curCharIdValid = false
+    offValue = offValue or self.CONST_OFF_VALUE
+	-- for all known traits...
+    for curCharId, traitList in pairs(self.sv.acquiredTraits) do		
+        if curCharId ~= offValue then
+			-- check if character id is valid - so it won't consider old characters which have been deleted but still exist in saved variables...
+			curCharIdValid = false
+			-- for every character of the current acount...
+			for l_charId, l_charName in pairs(self.charId2Name) do
+				if l_charId == curCharId then
+					curCharIdValid = true -- character is valid, set flag
+				end
+			end
+			-- character id is valid?
+			if curCharIdValid == true then
+				countChars = countChars + 1 -- count valid characters
+				if traitList and traitList[traitKey] == true then
+					countCharsKnowingTrait = countCharsKnowingTrait + 1 -- count characters who know this trait
+				end
+			end
+        end
+    end
+	if countChars == countCharsKnowingTrait then
+		knownByAllChars = true
+	end
+	return knownByAllChars
+end
+
+-- ... function #2: return color for state if trait is known by all characters
+function ResearchAssistantSettings:GetResearchedByAllColor()
+    local r, g, b, a = 100, 100, 100, .5 -- this is just static at the moment - could eventually be added to addon settings / saved variables...
+    return {r, g, b, a}
+end
+-- INS-G0K4R-2022-06-24 - end
